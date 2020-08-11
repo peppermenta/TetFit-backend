@@ -48,4 +48,35 @@ router.post('/',(req,res) => {
 
 });
 
+
+router.post('/updateRating',(req,res)=>{
+    const exerciseName = req.body.name;
+    const newRating = req.body.newRating;
+
+    let currRating = 0;
+    let currNumRating = 0;
+    Exercise.findOne({name: exerciseName})
+        .then((exercise)=>{
+            console.log(exercise.numRatings);
+            currNumRating = exercise.numRatings;
+            currRating = exercise.rating;
+            let updatedRating = (currRating*currNumRating + newRating)/(currNumRating+1);
+            let newNumRating = currNumRating + 1;
+            
+            console.log(currRating,currNumRating);
+            console.log(updatedRating,newNumRating)
+
+            update = {rating:updatedRating,numRatings:newNumRating}
+
+            Exercise.findOneAndUpdate({name:exerciseName},update,{new:true})
+                .then((updatedExercise)=>{
+                    res.send(updatedExercise);
+                })
+        })
+        .catch((err)=>{
+            res.send(err.message);
+        })
+
+});
+
 module.exports = router;
